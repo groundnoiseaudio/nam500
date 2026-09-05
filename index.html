@@ -3,37 +3,38 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>NAM500</title>
+    <title>NAM500 Plugin</title>
     <meta
       name="description"
-      content="NAM500 is a flexible NAM player for your captures and your signal chain."
+      content="NAM500 is a flexible Neural Amp Modeler plugin for building capture-based signal chains."
     />
     <link rel="icon" type="image/png" href="assets/favicon.png" />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <main class="unit" aria-label="NAM500 landing page">
-      <div class="brand">Ground Noise</div>
+      <div class="brand">Ground Noise Audio</div>
       <div class="topline">
-        <nav aria-label="Downloads">
-          <a href="https://github.com/groundnoiseaudio/nam500/releases/latest/download/NAM500-macOS-installer.pkg">Mac</a>
-          <a href="https://github.com/groundnoiseaudio/nam500/releases/latest/download/NAM500-Windows-installer.exe">Windows</a>
-        </nav>
+          <nav aria-label="Downloads">
+            <a href="https://github.com/groundnoiseaudio/nam500/releases/latest/download/NAM500-macOS-installer.pkg">Mac</a>
+            <a href="https://github.com/groundnoiseaudio/nam500/releases/latest/download/NAM500-Windows-installer.exe">Windows</a>
+            <span id="release-version" aria-label="Latest release version">Loading version...</span>
+          </nav>
       </div>
 
       <section class="faceplate" aria-labelledby="title">
-        <p class="serial">NEURAL AMP MODELER / SIGNAL CHAIN</p>
-        <h1 id="title">NAM capture player.</h1>
+        <p class="serial">NEURAL AMP MODELER / SIGNAL CHAINS</p>
+        <h1 id="title">Build your chain.</h1>
         <p class="copy">
-          NAM500 lets you build a chain from your collection of captures, then place each
-          instance where it belongs in the session.
+          NAM500 lets you build signal chains from your capture collection and place each
+          instance exactly where it belongs in your session.
         </p>
       </section>
 
       <section class="shots" aria-label="Plugin screenshots">
         <figure>
           <img src="assets/screenshot-nam500.png" alt="NAM500 plugin rack interface" />
-          <figcaption>Plugin rack</figcaption>
+          <figcaption>NAM500</figcaption>
         </figure>
       </section>
 
@@ -43,12 +44,21 @@
           <li>Load your NAM captures</li>
           <li>Use amps, pedals, and other captured gear</li>
           <li>Route audio between multiple NAM500 instances</li>
-          <li>Pick the input and output source for each instance</li>
+          <li>Choose input and output sources for each instance</li>
           <li>Build larger chains inside your DAW</li>
           <li>Play with fast, low-latency processing</li>
           <li>Resize the interface to fit your screen</li>
         </ul>
       </section>
     </main>
+    <script>
+      fetch("https://api.github.com/repos/groundnoiseaudio/nam500/releases/latest")
+        .then((response) => response.ok ? response.json() : Promise.reject())
+        .then((release) => {
+          const version = document.querySelector("#release-version");
+          version.textContent = release.tag_name;
+        })
+        .catch(() => {});
+    </script>
   </body>
 </html>

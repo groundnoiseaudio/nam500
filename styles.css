@@ -87,8 +87,8 @@ h1 {
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   font-size: clamp(4.6rem, 16vw, 13rem);
   font-weight: 900;
-  line-height: 0.78;
-  letter-spacing: -0.075em;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
 }
 
 .copy {
