@@ -2,35 +2,51 @@ name: Update download stats
 
 on:
   schedule:
+    # Every 6 hours, offset from the top of the hour
     - cron: "17 */6 * * *"
 
   workflow_dispatch:
 
 jobs:
-  update:
+  update-download-stats:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get release download count
+      - name: Fetch release download stats
         id: stats
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           total=$(
             gh api --paginate \
-              repos/${{ github.repository }}/releases \
+              "repos/${GH_REPO}/releases" \
               --jq '[.[].assets[].download_count] | add // 0' |
             awk '{sum += $1} END {print sum}'
           )
 
+          updated=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
           echo "total=$total" >> "$GITHUB_OUTPUT"
-          echo "updated=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+          echo "updated=$updated" >> "$GITHUB_OUTPUT"
 
       - name: Store download stats
         env:
           GH_TOKEN: ${{ secrets.VARIABLE_TOKEN }}
+          GH_REPO: ${{ github.repository }}
           TOTAL: ${{ steps.stats.outputs.total }}
           UPDATED: ${{ steps.stats.outputs.updated }}
         run: |
-          gh variable set DOWNLOADS --body "$TOTAL"
-          gh variable set DOWNLOADS_UPDATED_AT --body "$UPDATED"
+          gh variable set DOWNLOADS \
+            --body "$TOTAL"
+
+          gh variable set DOWNLOADS_UPDATED_AT \
+            --body "$UPDATED"
+
+      - name: Show stored values
+        env:
+          TOTAL: ${{ steps.stats.outputs.total }}
+          UPDATED: ${{ steps.stats.outputs.updated }}
+        run: |
+          echo "Downloads: $TOTAL"
+          echo "Updated at: $UPDATED"
