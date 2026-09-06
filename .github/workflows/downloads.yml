@@ -1,0 +1,36 @@
+name: Update download stats
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get release download count
+        id: stats
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          total=$(
+            gh api --paginate \
+              repos/${{ github.repository }}/releases \
+              --jq '[.[].assets[].download_count] | add // 0' |
+            awk '{sum += $1} END {print sum}'
+          )
+
+          echo "total=$total" >> "$GITHUB_OUTPUT"
+          echo "updated=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_OUTPUT"
+
+      - name: Store download stats
+        env:
+          GH_TOKEN: ${{ secrets.VARIABLE_TOKEN }}
+          TOTAL: ${{ steps.stats.outputs.total }}
+          UPDATED: ${{ steps.stats.outputs.updated }}
+        run: |
+          gh variable set DOWNLOADS --body "$TOTAL"
+          gh variable set DOWNLOADS_UPDATED_AT --body "$UPDATED"
